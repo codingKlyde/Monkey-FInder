@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage Title="{Binding Title}"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:model="clr-namespace:Siklab.Model"
+             xmlns:viewmodel="clr-namespace:Siklab.ViewModel"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Siklab.MainPage"
+             x:DataType="viewmodel:MainPageViewModel">
+
+    <Grid ColumnDefinitions="*, *" ColumnSpacing="5" RowDefinitions="*, Auto">
+        <RefreshView Command="{Binding GetMonkeysCommand}" Grid.ColumnSpan="2" IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding Monkeys}" SelectionMode="None">
+                <!--#region EMPTYVIEW -->
+                <CollectionView.EmptyView>
+                    <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label FontSize="60" Text="Nothing to show here"/>
+                        <Label FontSize="12" Text="Try reloading the page again"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                <!--#endregion-->
+                <!--#region ITEMTEMPLATE -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Monkey">
+                        <Grid Padding="10">
+                            <Frame HeightRequest="120" Padding="0" Style="{StaticResource CardView}">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainPageViewModel}}, Path=GoToDetailsPageCommand}" CommandParameter="{Binding .}"/>
+                                </Frame.GestureRecognizers>
+                                <Grid ColumnDefinitions="125, *" Padding="0">
+                                    <Image Aspect="AspectFill"
+                                           HeightRequest="125"
+                                           Source="{Binding Image}"
+                                           WidthRequest="125"/>
+                                    <VerticalStackLayout Grid.Column="1" Padding="10" VerticalOptions="Center">
+                                        <Label Style="{StaticResource LargeLabel}" Text="{Binding Name}"/>
+                                        <Label Style="{StaticResource MediumLabel}" Text="{Binding Location}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <!--#endregion-->
+                <!--#region ITEMSLAYOUT -->
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout 
+                        Orientation="Vertical" 
+                        Span="{OnIdiom Desktop=2, Default=1}"/>
+                </CollectionView.ItemsLayout>
+                <!--#endregion-->
+            </CollectionView>
+        </RefreshView>
+        <!--#region [BUTTON] GET MONKEYS -->
+        <Button
+            Text="Get Monkeys" 
+            Command="{Binding GetMonkeysCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Grid.Row="1"
+            Style="{StaticResource ButtonOutline}"
+            Margin="8"/>
+        <!--#endregion-->
+        <!--#region [BUTTON] FIND CLOSEST MONKEY -->
+        <Button 
+            Text="Find Closest Monkey" 
+            Command="{Binding GetClosestMonkeyCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource ButtonOutline}"
+            Margin="8"/>
+        <!--#endregion-->
+        <!--#region [ACTIVITY INDICATOR] -->
+        <ActivityIndicator 
+            Grid.ColumnSpan="2"
+            Grid.RowSpan="2"
+            HorizontalOptions="FillAndExpand"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Center"/>
+        <!--#endregion-->
+    </Grid>
+</ContentPage>
